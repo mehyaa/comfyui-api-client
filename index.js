@@ -20,6 +20,7 @@ const PROMPT_TIMEOUT_MS = 10 * 60 * 1000;
 
 const SUPPORTED_OPTIONS = Object.freeze([
   "api",
+  "api-key",
   "cfg",
   "height",
   "image-quality",
@@ -68,10 +69,14 @@ function toWebSocketUrl(httpUrl) {
   return url.toString();
 }
 
-function createComfyWebSocket(api, clientId) {
+function buildAuthHeaders(apiKey) {
+  return apiKey ? { Authorization: `Bearer ${apiKey}` } : {};
+}
+
+function createComfyWebSocket(api, clientId, apiKey) {
   const wsUrl = toWebSocketUrl(api);
   const url = `${wsUrl}?clientId=${encodeURIComponent(clientId)}`;
-  return new WebSocket(url);
+  return new WebSocket(url, { headers: buildAuthHeaders(apiKey) });
 }
 
 function closeWebSocket(ws) {
@@ -259,8 +264,10 @@ function waitForPromptCompletionOverWebSocket(
   });
 }
 
-async function getGeneratedFilenameFromHistory(api, promptId) {
-  const historyResponse = await fetch(`${api}/history/${promptId}`);
+async function getGeneratedFilenameFromHistory(api, promptId, apiKey) {
+  const historyResponse = await fetch(`${api}/history/${promptId}`, {
+    headers: buildAuthHeaders(apiKey),
+  });
 
   if (!historyResponse.ok) {
     throw new Error(
@@ -345,7 +352,7 @@ async function main() {
     }
 
     console.error(
-      "\nUsage: node index.js --workflow <workflow-name> --input <input-json-file> [--api <url>] [--width <number>] [--height <number>] [--steps <number>] [--cfg <number>] [--image-quality <number>] [--output <output-directory>]",
+      "\nUsage: node index.js --workflow <workflow-name> --input <input-json-file> [--api <url>] [--api-key <key>] [--width <number>] [--height <number>] [--steps <number>] [--cfg <number>] [--image-quality <number>] [--output <output-directory>]",
     );
 
     return;
@@ -379,7 +386,8 @@ async function main() {
     await fs.mkdir(outputDir, { recursive: true });
   }
 
-  const api = options.api ?? COMFY_URL;
+  const api = options.api ?? process.env.COMFY_URL ?? COMFY_URL;
+  const apiKey = options.apiKey ?? process.env.COMFY_API_KEY;
 
   const width = parseIntOrDefault(options.width, DEFAULT_WIDTH);
   const height = parseIntOrDefault(options.height, DEFAULT_HEIGHT);
@@ -402,7 +410,7 @@ async function main() {
   console.log(`Processing ${input.length} records. Seed: ${seed}\n`);
 
   const wsClientId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const ws = createComfyWebSocket(api, wsClientId);
+  const ws = createComfyWebSocket(api, wsClientId, apiKey);
 
   try {
     await waitForSocketOpen(ws);
@@ -468,7 +476,10 @@ async function main() {
 
         const response = await fetch(`${api}/prompt`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...buildAuthHeaders(apiKey),
+          },
           body: JSON.stringify({ prompt: promptData, client_id: wsClientId }),
         });
 
@@ -510,7 +521,11 @@ async function main() {
           process.stdout.write("\n");
         }
 
-        generatedFilename = await getGeneratedFilenameFromHistory(api, prompt_id);
+        generatedFilename = await getGeneratedFilenameFromHistory(
+          api,
+          prompt_id,
+          apiKey,
+        );
       } catch (error) {
         if (hasInlineProgress) {
           process.stdout.write("\n");
@@ -533,6 +548,7 @@ async function main() {
       // 3. STEP: Download the generated image (PNG)
       const imageResponse = await fetch(
         `${api}/view?filename=${generatedFilename}&type=output`,
+        { headers: buildAuthHeaders(apiKey) },
       );
 
       const arrayBuffer = await imageResponse.arrayBuffer();
