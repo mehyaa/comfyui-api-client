@@ -28,8 +28,8 @@ export default async function getWorkflowData({
   cfg,
   steps,
   seed,
-  height,
   width,
+  height,
 }) {
   const workflowData = await loadTemplate();
 
@@ -41,8 +41,8 @@ export default async function getWorkflowData({
     workflowData["7"].inputs.text = negativePrompt;
   }
 
-  workflowData["13"].inputs.height = height;
   workflowData["13"].inputs.width = width;
+  workflowData["13"].inputs.height = height;
 
   workflowData["3"].inputs.cfg = cfg;
   workflowData["3"].inputs.steps = steps;

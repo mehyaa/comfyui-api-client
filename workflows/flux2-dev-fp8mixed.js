@@ -27,8 +27,8 @@ export default async function getWorkflowData({
   cfg,
   steps,
   seed,
-  height,
   width,
+  height
 }) {
   const workflowData = await loadTemplate();
 
@@ -36,8 +36,8 @@ export default async function getWorkflowData({
 
   workflowData["9"].inputs.filename_prefix = slug;
 
-  workflowData["75:69"].inputs.value = height;
   workflowData["75:68"].inputs.value = width;
+  workflowData["75:69"].inputs.value = height;
 
   workflowData["75:63"].inputs.cfg = cfg;
   workflowData["75:62"].inputs.steps = steps;

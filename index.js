@@ -11,8 +11,8 @@ const OUTPUT_DIR = "output";
 const DEFAULT_STEPS = 30;
 const DEFAULT_CFG = 4.0;
 
-const DEFAULT_HEIGHT = 1024;
 const DEFAULT_WIDTH = 1024;
+const DEFAULT_HEIGHT = 1024;
 
 const DEFAULT_IMAGE_QUALITY = 95;
 
@@ -389,10 +389,10 @@ async function main() {
   const api = options.api ?? process.env.COMFY_URL ?? COMFY_URL;
   const apiKey = options.apiKey ?? process.env.COMFY_API_KEY;
 
-  const width = parseIntOrDefault(options.width, DEFAULT_WIDTH);
-  const height = parseIntOrDefault(options.height, DEFAULT_HEIGHT);
-  const defaultSteps = parseIntOrDefault(options.steps, DEFAULT_STEPS);
-  const defaultCfg = parseFloatOrDefault(options.cfg, DEFAULT_CFG);
+  const globalWidth = parseIntOrDefault(options.width, DEFAULT_WIDTH);
+  const globalHeight = parseIntOrDefault(options.height, DEFAULT_HEIGHT);
+  const globalSteps = parseIntOrDefault(options.steps, DEFAULT_STEPS);
+  const globalCfg = parseFloatOrDefault(options.cfg, DEFAULT_CFG);
   const imageQuality = parseIntOrDefault(
     options.imageQuality,
     DEFAULT_IMAGE_QUALITY,
@@ -451,8 +451,10 @@ async function main() {
 
       console.log(`[${index + 1}/${input.length}] STARTING: ${filename}`);
 
-      const effectiveSteps = parseIntOrDefault(item.steps, defaultSteps);
-      const effectiveCfg = parseFloatOrDefault(item.cfg, defaultCfg);
+      const effectiveWidth = parseIntOrDefault(item.width, globalWidth);
+      const effectiveHeight = parseIntOrDefault(item.height, globalHeight);
+      const effectiveSteps = parseIntOrDefault(item.steps, globalSteps);
+      const effectiveCfg = parseFloatOrDefault(item.cfg, globalCfg);
 
       console.log(`  ├ Params: cfg=${effectiveCfg}, steps=${effectiveSteps}`);
 
@@ -463,8 +465,8 @@ async function main() {
         cfg: effectiveCfg,
         steps: effectiveSteps,
         seed,
-        height,
-        width,
+        width: effectiveWidth,
+        height: effectiveHeight
       });
 
       let generatedFilename = null;
