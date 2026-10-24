@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const TEMPLATE_FILE = "z-image-turbo.json";
+const TEMPLATE_FILE = "fibo2_dev.json";
 
 let template;
 
@@ -33,20 +33,16 @@ export default async function getWorkflowData({
 }) {
   const workflowData = await loadTemplate();
 
-  workflowData["6"].inputs.text = prompt;
-
-  workflowData["9"].inputs.filename_prefix = slug;
-
+  workflowData["6"].inputs.prompt = prompt;
   if (negativePrompt) {
-    workflowData["7"].inputs.text = negativePrompt;
+    workflowData["6"].inputs.negative_prompt = negativePrompt;
   }
-
-  workflowData["13"].inputs.width = width;
-  workflowData["13"].inputs.height = height;
-
-  workflowData["3"].inputs.cfg = cfg;
-  workflowData["3"].inputs.steps = steps;
-  workflowData["3"].inputs.seed = seed;
+  workflowData["9"].inputs.filename_prefix = slug;
+  workflowData["6"].inputs.width = width;
+  workflowData["6"].inputs.height = height;
+  workflowData["30"].inputs.cfg = cfg;
+  workflowData["30"].inputs.steps = steps;
+  workflowData["30"].inputs.seed = seed;
 
   return workflowData;
 }

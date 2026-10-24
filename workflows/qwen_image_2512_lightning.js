@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const TEMPLATE_FILE = "qwen-image-2512-fp8-e4m3fn.json";
+const TEMPLATE_FILE = "qwen_image_2512_lightning.json";
 
 let template;
 
@@ -33,20 +33,16 @@ export default async function getWorkflowData({
 }) {
   const workflowData = await loadTemplate();
 
-  workflowData["238:227"].inputs.text = prompt;
-
-  workflowData["60"].inputs.filename_prefix = slug;
-
+  workflowData["6"].inputs.text = prompt;
+  workflowData["9"].inputs.filename_prefix = slug;
   if (negativePrompt) {
-    workflowData["238:228"].inputs.text = negativePrompt;
+    workflowData["7"].inputs.text = negativePrompt;
   }
-
-  workflowData["238:232"].inputs.width = width;
-  workflowData["238:232"].inputs.height = height;
-
-  workflowData["238:230"].inputs.cfg = cfg;
-  workflowData["238:230"].inputs.steps = steps;
-  workflowData["238:230"].inputs.seed = seed;
+  workflowData["13"].inputs.width = width;
+  workflowData["13"].inputs.height = height;
+  workflowData["30"].inputs.cfg = cfg;
+  workflowData["30"].inputs.steps = steps;
+  workflowData["30"].inputs.seed = seed;
 
   return workflowData;
 }

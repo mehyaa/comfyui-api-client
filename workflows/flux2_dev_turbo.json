@@ -24,7 +24,7 @@
   },
   "9": {
     "inputs": {
-      "filename_prefix": "name",
+      "filename_prefix": "output",
       "images": [
         "8",
         0
@@ -45,49 +45,11 @@
     },
     "class_type": "UNETLoader"
   },
-  "13": {
-    "inputs": {
-      "noise": [
-        "25",
-        0
-      ],
-      "guider": [
-        "22",
-        0
-      ],
-      "sampler": [
-        "16",
-        0
-      ],
-      "sigmas": [
-        "48",
-        0
-      ],
-      "latent_image": [
-        "47",
-        0
-      ]
-    },
-    "class_type": "SamplerCustomAdvanced"
-  },
   "16": {
     "inputs": {
       "sampler_name": "euler"
     },
     "class_type": "KSamplerSelect"
-  },
-  "22": {
-    "inputs": {
-      "model": [
-        "12",
-        0
-      ],
-      "conditioning": [
-        "26",
-        0
-      ]
-    },
-    "class_type": "BasicGuider"
   },
   "25": {
     "inputs": {
@@ -97,7 +59,7 @@
   },
   "26": {
     "inputs": {
-      "guidance": 4,
+      "guidance": 4.0,
       "conditioning": [
         "6",
         0
@@ -123,10 +85,59 @@
   },
   "48": {
     "inputs": {
-      "steps": 10,
+      "steps": 8,
       "width": 1024,
       "height": 1024
     },
     "class_type": "Flux2Scheduler"
+  },
+  "11": {
+    "inputs": {
+      "model": [
+        "12",
+        0
+      ],
+      "lora_name": "Flux2TurboComfyv2.safetensors",
+      "strength_model": 1.0
+    },
+    "class_type": "LoraLoaderModelOnly"
+  },
+  "22": {
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "conditioning": [
+        "26",
+        0
+      ]
+    },
+    "class_type": "BasicGuider"
+  },
+  "13": {
+    "inputs": {
+      "noise": [
+        "25",
+        0
+      ],
+      "guider": [
+        "22",
+        0
+      ],
+      "sampler": [
+        "16",
+        0
+      ],
+      "sigmas": [
+        "48",
+        0
+      ],
+      "latent_image": [
+        "47",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced"
   }
 }
